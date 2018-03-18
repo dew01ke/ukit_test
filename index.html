@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="./css/main.css">
+</head>
+<body>
+<div class="container">
+    <div id="sidebar" class="sidebar">
+        <div id="sidebar-top-create" class="sidebar-top">
+            Добавить новую книгу
+        </div>
+        <div id="sidebar-top-edit" class="sidebar-top">
+            Редактирование книги
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-block">
+                <div class="sidebar-block-title">Название:</div>
+                <div class="sidebar-block-input"><input id="input-name" class="sidebar-input sidebar-text-input"
+                                                        placeholder="Например, Горе от ума" type="text" data-v-type="string" data-v-min="1" data-v-max="250"></div>
+            </div>
+
+            <div class="sidebar-block">
+                <div class="sidebar-block-title">Автор:</div>
+                <div class="sidebar-block-input"><input id="input-author" class="sidebar-input sidebar-text-input"
+                                                        placeholder="Например, А. С. Пушкин" type="text" data-v-type="string" data-v-min="1" data-v-max="250"></div>
+            </div>
+
+            <div class="sidebar-block sidebar-block-mobile-2">
+                <div class="sidebar-block-title">Год выпуска:</div>
+                <div class="sidebar-block-input">
+                    <input id="input-date" class="sidebar-input sidebar-date-input" placeholder="Например, 1985" type="text" data-v-type="int" data-v-min="1500" data-v-max="2019">
+                    <button class="sidebar-input-button sidebar-input-button-left button icon icon-date"></button>
+                </div>
+            </div>
+
+            <div class="sidebar-block sidebar-block-mobile-2">
+                <div class="sidebar-block-title">Страниц:</div>
+                <div class="sidebar-block-input">
+                    <button id="sidebar-count-dec" class="sidebar-input-button sidebar-input-button-right button icon icon-sub"></button>
+                    <input id="input-count"  class="sidebar-input sidebar-count-input" placeholder="Например, 150" type="text" data-v-type="int" data-v-min="1" data-v-max="10000">
+                    <button id="sidebar-count-inc" class="sidebar-input-button sidebar-input-button-left button icon icon-add"></button>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-bottom">
+            <button id="sidebar-button-revert" class="sidebar-button sidebar-button-2">Отменить</button>
+            <button id="sidebar-button-save" class="sidebar-button sidebar-button-2 button-green">Сохранить</button>
+            <button id="sidebar-button-create" class="sidebar-button sidebar-button-1 button-green">Создать</button>
+        </div>
+    </div>
+    <div id="content" class="content">
+        <div class="content-top">
+            <div class="content-top-sort">
+                <span class="content-top-title">Сортировать:</span>
+                <a href="#" id="content-top-sort-name" data-s-type="0" class="content-top-sort-name">по названию</a>
+            </div>
+
+            <div class="content-top-search">
+                <input id="content-top-search-input" class="content-top-search-input" type="text" placeholder="... или можно найти">
+                <button class="content-top-search-button icon icon-search"></button>
+            </div>
+        </div>
+
+        <div id="content-empty" class="content-empty">
+            Очень похоже, что в библиотеку еще ничего не было добавлено. Для добавления нового контента используйте форму.
+        </div>
+
+        <div id="books" class="books"></div>
+
+        <!--<div class="book">-->
+            <!--<div class="book-author">Айн Рэнд</div>-->
+            <!--<div class="book-name">Атлант расправил плечи</div>-->
+            <!--<div class="book-controls">-->
+                <!--<button class="book-button-edit button icon icon-edit">1</button>-->
+                <!--<button class="book-button-remove button icon icon-remove">2</button>-->
+            <!--</div>-->
+        <!--</div>-->
+    </div>
+
+    <div style="display: none;" id="modal" class="overlay">
+        <div class="modal">
+            <div class="modal-header">Удаление книги</div>
+            <div class="modal-content">
+                <p>Вы действительно хотите удалить книгу?</p>
+            </div>
+            <div class="modal-bottom">
+                <button class="modal-button modal-button-2">Отменить</button>
+                <button class="modal-button modal-button-red modal-button-2">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="./js/main.js"></script>
+</body>
+</html>
