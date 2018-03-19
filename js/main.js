@@ -5,14 +5,13 @@
 // 2. При поиске желательно было бы еще добавить сколько вообще было результатов найдено и если нет реальтатов уведомить (по принципу с отсутствием книг)
 // 3. Ограничение на размер имени автора и названия книги в блоке карточки книги
 // 4. Проверка браузера на версию, чтобы сказать, что что-то может не работать
-// 5. Иконки в SVG или хотя бы побольше (сейчас 30x30)
-// 6. При сортировке можно, например, не делать сброс поиска
-// 7. В сортировке нужно обозначить в какую сторону поиск (по возр., по убыв.)
-// 8. Может где-то еще есть ошибки в логике
+// 5. При сортировке можно, например, не делать сброс поиска
+// 6. В сортировке нужно обозначить в какую сторону поиск (по возр., по убыв.)
 
 (function() {
     const APPLICATION_PREFIX = 'ukit_test';
 
+    // Некоторые вспомогательные функции
     const helpers = {
         hash: {
             guid: function() {
@@ -61,35 +60,36 @@
         }
     };
 
+    // Упрощенная версия шаблонизатора
     const View = function() {
         const _this = this;
         const _templates = {
             modal: `
-            <div class="overlay">
-                <div class="modal">
-                    <div class="modal-header">{title}</div>
-                        <div class="modal-content">
-                            <p>{text}</p>
-                        </div>
-                        <div class="modal-bottom">
-                            {buttons}
-                        </div>
+                <div class="overlay">
+                    <div class="modal">
+                        <div class="modal-header">{title}</div>
+                            <div class="modal-content">
+                                <p>{text}</p>
+                            </div>
+                            <div class="modal-bottom">
+                                {buttons}
+                            </div>
+                    </div>
                 </div>
-            </div>
-        `,
+            `,
             modal_button: `
-            <button id="{id}" class="modal-button {color} {type}">{text}</button>
-        `,
+                <button id="{id}" class="modal-button {color} {type}">{text}</button>
+            `,
             book: `
-        <div class="book">
-            <div class="book-author">{author}</div>
-            <div class="book-name">{name}</div>
-            <div class="book-controls">
-                <button class="book-button-edit button icon icon-edit"></button>
-                <button class="book-button-remove button icon icon-remove"></button>
-            </div>
-        </div>
-        `
+                <div class="book">
+                    <div class="book-author">{author}</div>
+                    <div class="book-name">{name}</div>
+                    <div class="book-controls">
+                        <button class="book-button-edit button icon icon-edit"></button>
+                        <button class="book-button-remove button icon icon-remove"></button>
+                    </div>
+                </div>
+            `
         };
 
         _this.set = function(name, template) {
@@ -117,6 +117,7 @@
         };
     };
 
+    // Локальное хранилище данных в localStorage, фолбэк на переменную
     const Storage = function() {
         const _this = this;
         let _data = {};
@@ -198,6 +199,7 @@
         };
     };
 
+    // Работа с ивентами, для более простой реактивности можно было сделать ивент эмиттер
     const Events = function() {
         const _this = this;
 
@@ -216,6 +218,7 @@
         }
     };
 
+    // Основные методы для работы с элементами настраницы, просто удобная обертка
     const DOM = function() {
         const _this = this;
 
@@ -269,6 +272,7 @@
         };
     };
 
+    // Проверка на корректность, пока возможность проверять числа и строки, проверяемый элемент должен иметь атрибуты
     const Validation = function() {
         const _this = this;
 
@@ -341,6 +345,7 @@
         const _dom = new DOM();
         const _validation = new Validation();
 
+        // Устанавливаем проверку на все вводимые поля в сайдбаре, если поле с ошибкой, то устанавливаем на него класс
         function inputValidationHandler(e) {
             const element = e.target;
             const type = _dom.attr(element, 'data-v-type');
@@ -362,6 +367,7 @@
             return result;
         }
 
+        // Основной хандлер кликов по всей области
         function onDocumentClickHandler(e) {
             if (_dom.hasClass(e.target, 'book-button-edit')) {
                 _events.sendCustomEvent('EVENT_BOOK_EDIT', { from: 'handler' }, e.target);
@@ -416,8 +422,10 @@
                     });
                     let direction = -1;
 
+                    // При работе с сортировкой сбрасываем поиск, его, по идее, можно и оставить
                     clearBookSearch(true);
 
+                    // Сортировка 3-х типов: нет сортировки, по возр., по убыв. Переключаются последовательно
                     if (type === '0') {
                         _dom.attr(e.target, 'data-s-type', '1');
                         direction = -1;
@@ -442,8 +450,26 @@
                     }
                 }
             }
+
+            if (_dom.attr(e.target, 'id') === 'sidebar-date-select') {
+                _this.methods.showModal({
+                    title: 'Что случилось?',
+                    text: `В данной версии этот функционал недоступен.<br> Для его разблокировки пригласите на собеседование: <b>me@andrey-volkov.ru</b>`,
+                    buttons: [
+                        {
+                            type: 'modal-button-1',
+                            text: 'Пригласить',
+                            onClick: function(e) {
+                                location.href = 'mailto:me@andrey-volkov.ru&subject=' + encodeURIComponent('Мы приглашаем вас на собеседование');
+                                e.modal.close();
+                            }
+                        }
+                    ]
+                });
+            }
         }
 
+        // Сброс результатов поиска и поисковой строки
         function clearBookSearch(resetInput) {
             const hidden = _dom.find('.book-search-hidden');
             for (let j in hidden) {
@@ -456,6 +482,7 @@
             }
         }
 
+        // Основной хандлер поиска
         function booksSearch(value, e) {
             if (!!value) {
                 for (let i in _cache.books) {
@@ -475,6 +502,9 @@
             }
         }
 
+        // При первой инициализации мы создаем кеш элементов на странице, чтобы постоянно их не искать,
+        // понятное дело, что пока элементов мало, это имеет малую эффективность, но в целом небольшой прирост производительности
+        // Также устанавливаем основные хандлеры на элементы
         _this.init = function() {
             _this.methods.initElementsCache();
 
@@ -502,7 +532,9 @@
             return _this;
         };
 
+        // Некоторые методы для работы
         _this.methods = {
+            // Создание локального кеша элементов
             initElementsCache: function() {
                 _cache.elements = {
                     sidebar: _dom.find('#sidebar')[0],
@@ -520,9 +552,11 @@
                     content_empty: _dom.find('#content-empty')[0],
                     count_inc: _dom.find('#sidebar-count-inc')[0],
                     count_dec: _dom.find('#sidebar-count-dec')[0],
+                    date_select: _dom.find('sidebar-date-select')[0]
                 };
             },
 
+            // Хандлер для увеличения\уменьшения количества страниц
             countValueIncrease: function(value) {
                 const v = _cache.elements.input_count.value;
                 const int = parseInt(v);
@@ -536,6 +570,8 @@
                 }
             },
 
+            // Общая проверка на валидность, это лишь примерный вариант как можно сделать.
+            // На самом деле нужно 100% делать информацию об ошибке, сейчас это неочевидно
             checkInputValidation: function() {
                 const isNameValid = inputValidationHandler({ target: _cache.elements.input_name });
                 const isAuthorValid = inputValidationHandler({ target: _cache.elements.input_author });
@@ -563,6 +599,7 @@
                 return true;
             },
 
+            // Создание модального окна
             showModal: function(options) {
                 if (!options) {
                     return false;
@@ -634,6 +671,7 @@
                 }
             },
 
+            // Создание книги, создает новый элемент на странице
             createBook: function(bookObject, checkValidation) {
                 if (bookObject) {
                     if (checkValidation) {
@@ -714,6 +752,7 @@
                 }
             },
 
+            // Сохранение изменений, изменяет элемент на странице
             saveBook: function(bookObject, cacheID, checkValidation) {
                 if (bookObject) {
                     if (checkValidation) {
@@ -747,6 +786,7 @@
                 }
             },
 
+            // Старт редактирования книги, сайдбар заполняется нужными данными
             editBook: function(bookObject) {
                 if (bookObject) {
                     _dom.addClass(_cache.elements.sidebar, 'sidebar-editable');
@@ -767,6 +807,7 @@
                 }
             },
 
+            // Проверка на наличие книг, если нет, то показываем на странице сообщение о том, что можно добавить
             checkIfBooksEmpty: function() {
                 if (Object.keys(_cache.books).length) {
                     _dom.hide(_cache.elements.content_empty);
@@ -777,6 +818,7 @@
                 }
             },
 
+            // Сброс сайдбара к созданию новой книги
             setDefaultSidebar: function() {
                 _cache.editable = null;
 

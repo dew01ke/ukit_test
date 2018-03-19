@@ -439,6 +439,7 @@ body {
 .icon {
     background-repeat: no-repeat;
     background-position: center;
+    background-size: 70%;
 }
 
 .icon-edit {
